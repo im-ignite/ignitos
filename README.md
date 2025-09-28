@@ -1,113 +1,202 @@
-Deployment Guide: Ignitos Telegram Auto-Reply Bot
-This guide provides the necessary steps to deploy your Telegram self-bot and its plugins on a Linux-based Virtual Private Server (VPS) for 24/7 operation.
+🚀 Ignitos Telegram Auto-Reply Bot Deployment Guide
+This guide will help you deploy and run your modular Telegram self-bot and its integrated control bot on a Linux-based Virtual Private Server (VPS) for continuous 24/7 operation.
 
-Prerequisites
-Before starting, ensure you have the following:
+✨ Features at a Glance
+Command Type
 
-A VPS Running Linux (e.g., Ubuntu, Debian, CentOS).
+Prefix
 
-SSH Access to your VPS.
+Description
 
-Your Bot Code (including main.py, config.json if it exists, the plugins folder, and requirements.txt).
+Powered By
 
-Your Credentials:
+User Bot
+
+.
+
+Commands you send, visible only to you (.ping, .ai, .img).
+
+Pyrogram
+
+Control Bot
+
+/
+
+Commands sent to the separate BotFather bot for remote control (/ai, /img).
+
+Pyrogram
+
+Auto-Reply
+
+Core
+
+Automatically replies to private messages when set to /away.
+
+Main Logic
+
+⚙️ Prerequisites
+Ensure you have the following information and access before starting the deployment:
+
+A Linux VPS: Running Ubuntu, Debian, or CentOS.
+
+SSH Access: To connect to your server.
+
+Bot Code: The full project directory, including main.py, the plugins folder, and requirements.txt.
+
+Credentials:
 
 Telegram API ID and API Hash (from my.telegram.org).
 
-BotFather Bot Token (for the control bot).
+BotFather Bot Token (for the remote control bot).
 
-Gemini API Key (for the .ai and .img commands).
+Gemini API Key (for the AI and Image generation features).
 
 Step 1: Prepare the VPS Environment
-Log in to your VPS via SSH and run these commands to install required tools and Python dependencies.
+Log in to your VPS via SSH to set up the necessary environment.
 
 1.1 Update System Packages and Install Python
+Use the appropriate package manager (apt for Debian/Ubuntu or yum for CentOS/RHEL).
+
 # Update package list
 sudo apt update
 
-# Install Python 3 and pip (or use 'yum install' on CentOS/RHEL)
-sudo apt install python3 python3-pip -y
+# Install Python 3, pip, and git
+sudo apt install python3 python3-pip git -y
 
-1.2 Install a Virtual Environment
-It's best practice to use a virtual environment to manage dependencies.
+1.2 Install and Activate a Virtual Environment
+It is highly recommended to use a Python virtual environment (venv) for dependency isolation.
 
 # Install the venv module
 sudo apt install python3-venv -y
 
-# Create a new directory for your project
+# Create a project directory and navigate into it
 mkdir ignitos_bot
 cd ignitos_bot
 
-# Create a virtual environment named 'venv'
+# Create and activate the virtual environment
 python3 -m venv venv
-
-# Activate the virtual environment
 source venv/bin/activate
 
-Step 2: Transfer and Install Code
-2.1 Transfer Code to VPS
-Use tools like scp, sftp, or Git to move your project files (main.py, plugins/, requirements.txt, etc.) into the ignitos_bot directory on your VPS.
+Step 2: Transfer Code and Install Dependencies
+2.1 Transfer Code to VPS via Git
+Run these commands inside the active ignitos_bot directory:
 
-If you are using Git, run these commands inside the ignitos_bot directory:
-
-# Install git if you haven't already
-sudo apt install git -y
-
-# Clone your repository (replace with your actual URL)
+# Clone your repository (REPLACE with your actual GitHub URL)
 git clone [https://github.com/im-ignite/ignitos.git](https://github.com/im-ignite/ignitos.git) .
 
-2.2 Install Python Dependencies
-Make sure your virtual environment is still active ((venv) should be visible in your prompt).
+# OR: Use scp/sftp to transfer files manually
+# scp -r /local/path/to/bot user@vps_ip:/home/user/ignitos_bot
 
-# Install the required Python libraries (pyrogram, requests, Pillow)
+2.2 Install Python Dependencies
+Make sure the virtual environment is still active ((venv) should be visible in your prompt).
+
+# Install all required Python libraries (pyrogram, requests, Pillow, etc.)
 pip install -r requirements.txt
 
 Step 3: Run the Bot for Initial Setup
-The bot needs to run interactively once to create the user session file (user_bot_session.session) and save your API keys.
+The bot must run interactively once to create the necessary session file and save your credentials securely.
 
 Run the main script:
 
 python3 main.py
 
-Follow the Prompts: The script will guide you through entering your:
+Follow the Interactive Prompts:
 
-BotFather Bot Token.
+The script will first ask for your BotFather Token.
 
-Telegram API ID and API Hash.
+It will then prompt for your Telegram API ID and API Hash.
 
-Phone number, OTP, and 2FA password (for the user session).
+Next, it will guide you through the Pyrogram login process (Phone Number, OTP, and 2FA password) to create the user_bot_session.session file.
 
-Gemini API Key.
+Finally, it will ask for your Gemini API Key.
 
-The script will exit automatically after successfully saving all configuration details.
+The script will exit gracefully once all configuration steps are complete.
 
-Check for Files: Verify that config.json and the .session file have been created in your project directory.
+Verify Configuration: Ensure the config.json and the .session file have been successfully created in the ignitos_bot directory.
 
 Step 4: Run the Bot Continuously using screen
-The screen utility is perfect for running applications in the background, even after you disconnect from SSH.
+Use the screen utility to ensure the bot remains running even after you close your SSH connection.
 
-4.1 Install screen
+4.1 Install screen (if not done in Step 1)
 sudo apt install screen -y
 
 4.2 Start the Bot in a New Screen Session
-Activate the virtual environment (if not already active):
+Re-activate the virtual environment (if you detached):
 
 source venv/bin/activate
 
-Start a new screen session and run the bot:
+Start a new screen session and launch the bot:
 
 screen -S ignitos_session
 python3 main.py
 
-The bot is now running inside the virtual session.
+The bot is now running inside the persistent screen session.
 
 4.3 Detach and Exit
-To detach from the screen session (leaving the bot running), press:
-Ctrl + A then D
+To detach from the screen session (leaving the bot running):
 
-You can now safely log out of your SSH session. The bot will continue running.
+Press Ctrl + A then D
 
-Management Commands
+You can now safely log out of your SSH session.
+
+🛠️ Bot Command Reference
+Function
+
+User Bot Command (Self-Command)
+
+Control Bot Command (via BotFather)
+
+Notes
+
+Auto-Reply ON
+
+.away
+
+-
+
+Enables auto-reply feature.
+
+Auto-Reply OFF
+
+.online
+
+-
+
+Disables auto-reply feature.
+
+Edit Auto-Reply Message
+
+.editoff [new message]
+
+-
+
+Updates the message sent when .away is active.
+
+Check Latency
+
+.ping
+
+-
+
+Returns the bot's reaction time in milliseconds.
+
+AI Generation
+
+.ai [prompt]
+
+/ai [prompt]
+
+Answers questions using the Gemini API with Google Search grounding.
+
+Image Generation
+
+.img [prompt]
+
+/img [prompt]
+
+Generates an image based on the prompt using the Imagen 3 API.
+
+Management Commands (VPS Console)
 Action
 
 Command
@@ -120,21 +209,15 @@ screen -r ignitos_session
 
 See the bot's console output.
 
-Detach from the session
-
-Ctrl + A then D
-
-Leaves the bot running in the background.
-
 Stop the bot entirely
 
-screen -r ignitos_session and press Ctrl + C
+Re-attach, then press Ctrl + C
 
-You must be attached to the session to stop it.
+Stops the script inside the screen session.
 
 List all running screen sessions
 
 screen -ls
 
-
+Shows all detached sessions.
 
